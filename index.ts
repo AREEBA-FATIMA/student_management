@@ -9,7 +9,7 @@ class Student {
     name: string;
     courses: string[];
     balance: number;
-    
+
     constructor(name: string) {
         this.id = Student.counter++;
         this.name = name;
@@ -17,8 +17,15 @@ class Student {
         this.balance = 100;
     }
 
-    enrollCourse(course: string) {
-        this.courses.push(course);
+    enrollCourse(course: string, fee: number) {
+        if (this.balance >= fee) {
+            this.courses.push(course);
+            this.balance -= fee;
+            console.log(`${this.name} has been enrolled in ${course} successfully!`);
+            console.log(`Course fee of ${fee}Rs has been deducted from the balance.`);
+        } else {
+            console.log(`Insufficient balance to enroll in ${course}. Required: ${fee}Rs, Available: ${this.balance}Rs.`);
+        }
     }
 
     viewBalance() {
@@ -64,12 +71,11 @@ class StudentManager {
         `);
     }
 
-    enrollStudent(studentID: number, course: string) {
+    enrollStudent(studentID: number, course: string, fee: number) {
         let student = this.findStudent(studentID);
 
         if (student) {
-            student.enrollCourse(course);
-            console.log(`${student.name} has been enrolled in ${course} successfully!`);
+            student.enrollCourse(course, fee);
         } else {
             console.log("Student not found. Please enter a correct Student ID");
         }
@@ -155,10 +161,17 @@ async function main() {
                         type: "list",
                         name: "course",
                         message: "Please select a course",
-                        choices: ["English Language - 3000/=", "Digital Accounting - 3500/=", "Graphic Designing - 3500/=", "Web Development - 5000/=", "Video Editing - 4000/=", "CIT - 3000/="]
+                        choices: [
+                            {name: "English Language - 3000/=", value: {course: "English Language", fee: 3000}},
+                            {name: "Digital Accounting - 3500/=", value: {course: "Digital Accounting", fee: 3500}},
+                            {name: "Graphic Designing - 3500/=", value: {course: "Graphic Designing", fee: 3500}},
+                            {name: "Web Development - 5000/=", value: {course: "Web Development", fee: 5000}},
+                            {name: "Video Editing - 4000/=", value: {course: "Video Editing", fee: 4000}},
+                            {name: "CIT - 3000/=", value: {course: "CIT", fee: 3000}}
+                        ]
                     }
                 ]);
-                studentManager.enrollStudent(ask2.studentID, ask2.course);
+                studentManager.enrollStudent(ask2.studentID, ask2.course.course, ask2.course.fee);
                 break;
 
             case "View Student Balance":
